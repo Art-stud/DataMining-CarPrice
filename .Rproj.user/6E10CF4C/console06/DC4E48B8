@@ -1,20 +1,29 @@
-[0m[0KMicrosoft Windows [Version 10.0.18363.836][0K[?25l
-(c) 2019 Microsoft Corporation. All rights reserved.[0K
-[0K
-C:\Users\khalida\Documents\Business Statistic\Document\Car Price>[0K[?25h[?25l[3AMicrosoft Windows [Version 10.0.18363[0K.
+[0mMicrosoft Windows [Version 10.0.18363[0K.[?25l
 836][0K
 (c) 2019 Microsoft Corporation. All r[0Ki
 ghts reserved.[0K
 [0K
 C:\Users\khalida\Documents\Business S[0Kt
-atistic\Document\Car Price>[0K[?25h[?25l[5A                                 ghts reserved.[0K
+rpart.plot[0K([?25l
+model1, type= 3, digits= 2, fallen.le[0Ka
+ves=TRUE)[0K
+'rpart.plot' is not recognized as an [0Ki
+nternal or external command,[0K
+operable program or batch file.[0K
+[0K
+C:\Users\khalida\Documents\Business S[0Kt
+atistic\Document\Car Price>[0K[?25h[?25l[14AMicrosoft Windows [Version 10.0.18363.836][0K
+(c) 2019 Microsoft Corporation. All rights reserved.[0K
+[0K
+C:\Users\khalida\Documents\Business Statistic\Document\Car Price>rpart.plot(mode[0Kl
+1, type= 3, digits= 2, fallen.leaves=TRUE)[0K
+'rpart.plot' is not recognized as an internal or external command,[0K
+operable program or batch file.[0K
 [0K
 C:\Users\khalida\Documents\Business Statistic\Document\Car Price>[0K
 [0K
 [0K
-[0K[3A[66G[?25h[?25l[2A[0K
 [0K
-ghts reserved.[0K
 [0K
-C:\Users\khalida\Documents\Business S[0Kt
-atistic\Document\Car Price>[0K[?25h
+[0K
+[0K[6A[66G[?25h
