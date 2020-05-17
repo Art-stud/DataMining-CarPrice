@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1588534900088.000,
+    "dirty" : false,
+    "encoding" : "ISO8859-1",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "DC599BC3",
+    "lastKnownWriteTime" : 1587298308,
+    "last_content_update" : 1587298308,
+    "path" : "~/Business Statistic/Document/MED/RahamdiniKhalida.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "193,0",
+        "scrollLine" : "193"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

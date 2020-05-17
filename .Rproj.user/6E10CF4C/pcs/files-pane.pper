@@ -1,0 +1,9 @@
+{
+    "path" : "~/Business Statistic/Document/Car Price",
+    "sortOrder" : [
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        }
+    ]
+}

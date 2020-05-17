@@ -1,0 +1,551 @@
+#Group name : Khalida Rahmadini, Artur Porawski, Jacek Zielinski
+#Key question : How service quality of restaurants can affect the preference of customer in choosing which restaurant to visit?
+#Below is the prosedure how this research is conducted:
+
+#1. We are going to compare the number of visitor of MCD, KFC, and Tacobell restaurants
+#during 2 weeks using variable kfcq1,mcdq1,tbq1 and 2 months using variable kfcq4,mcdq4, tbq4
+#the graph #"NUmber of Visitor" will show the comparation of
+
+#2. we are going to corelate the result that will be shown from point 1 with variable q62(friendlystaff) and q64(service quality) to see how the these 2 variables affecting the number of visitor of each restaurant
+#We are going to test:
+#H0: Restaurant that has the greatest positive votes towards "Friendly Staff and Speed of Service"
+#is the restaurant that has the most number of visitors.
+#the graph #"Speed of Service Score" will show which restaurant earns the best score regarding Friendly Staff
+#the graph #"Friendly Staff Score" will show which restaurant earns the best score regarding service quality
+
+#3. Factor analysis
+#Y <- Number of visior KFC, MCD, and Tacobell
+#F1 <- CAre about other people testimony
+#F2 <- CAre about Brand Advertisement
+#F3 <- Care about Nutrition
+#multicolinearity will be checked using KMO, MSA score to see the corellation between x1:x  with Y
+#Variables with MSA Score, loading score and communality scores less than 0.5
+#should be omitted from the factor analysis one at a time, 
+#with the smallest one being omitted each time
+#there will be 2 graphs
+#"Carachteristic of Consumer 1"
+#"Characteristic of Consumer 2"
+#that will give us insight about why McDOnald has the most visitor compared to two other restaurant KFC and Tacobell
+
+#4. Regression Logistic
+#Y = number of visior
+#X1= Speed of Service
+#X2= Friendly Staff
+# We will see how significant X1, X2 will affect Y 
+#which means we are going to see weather satisfaction level of a customer regarding x1 and x2
+#will increare the probability that their are going to visit the restaurant within 2 months
+
+
+#load moduls dplyr and ggplot
+library(dplyr)
+library(ggplot2)
+
+#load dataframe
+
+dataIki<-choose.files("Data/FastFood")
+fastfood <-read.csv(dataIki)
+
+#load other moduls that will be needed for Factor analysis
+library(tidyverse)
+library(psych)
+library(GPArotation)
+library(knitr)
+
+#checking how the DF stucture looks like
+str(fastfood)
+head(fastfood)
+glimpse(fastfood)
+select()
+head(fastfood)
+
+#1. Comparison of visitor number between 3 different fastfood restaurants (McD, KFC, Tacobell) 
+obs1<- fastfood %>% select(tbq1, kfcq1, mcdq1) %>%  
+  gather(key = "resto", value = "visit")
+glimpse(obs1)
+head(obs1)
+#recode
+obs1$visit <- recode(obs1$visit,"Visited in 2 months"="yes", .default = "no")
+obs1<-obs1 %>% group_by(resto, visit) %>% 
+  summarise(n = n()) %>%
+  mutate(freq= n/sum(n)) %>% 
+  filter(visit=="yes")
+obs1
+ggplot(obs1, aes(x=resto, y=freq)) + theme_bw() + 
+  geom_bar(stat="identity", fill="green4")+
+  ggtitle("Number of Visitor")+
+  ylab("Frequency of Visit")+
+  xlab("Restaurant Name")+
+  scale_x_discrete(labels=c("mcdq1"="McDonalds","kfcq1"="KFC", "tbq1"="Tacobell"))
+
+#Conclusion : Mc DOnald has the most number of visitors compare to KFC and Tacobell
+
+
+#2. We are going to prove:
+#H0: Restaurant that has the greatest positive votes towards "Friendly Staff and Speed of Service"
+#is the restaurant that has the most number of visitors.
+
+#However, in this part, we are using mcq4. kfcq4, and tbq4 instead of mcq1. kfcq1, and tbq1
+#to see more accurate result towards number of visitors
+
+#There will be 2 graphs that show us which restaurant has greatest positive votes 
+#regarding Friendly Staff and speed of service parameters.
+#In the end, we are going to decide weather to accept H0 or to reject it.
+
+obs3 <-  select(fastfood, ID, tbq4, kfcq4, mcdq4, q62,q64)  
+
+head(obs3)
+obs3$tbq4 <- recode(obs3$tbq4, "Visited in 2 Weeks"= 1, .default= 0 )
+
+obs3$kfcq4 <- recode(obs3$kfcq4, "Visited in 2 Weeks"= 1, .default= 0 )
+
+obs3$mcdq4 <- recode(obs3$mcdq4, "Visited in 2 Weeks"= 1, .default= 0 )
+
+
+head(obs3)
+obs3<- mutate(obs3,numvisit= tbq4+kfcq4+mcdq4)
+unique(obs3$numvisit)  
+obs3
+obs3<- filter(obs3, obs3$numvisit==1)
+head(obs3)
+
+#Changing levels into numerical value 
+plot_base <- obs3
+plot_base$q64 <- factor(plot_base$q64, levels = c('Very Dissatisfied', 'Dissatisfied',
+                                                  'Somewhat Dissatisfied', 'Somewhat Satisfied',
+                                                  'Satisfied', ' Very Satisfied'))
+plot_base$q62 <- factor(plot_base$q62, levels = c('Very Dissatisfied', 'Dissatisfied',
+                                                  'Somewhat Dissatisfied', 'Somewhat Satisfied',
+                                                  'Satisfied', ' Very Satisfied'))
+plot_base$q64 <- as.numeric(plot_base$q64)
+plot_base$q62 <-as.numeric(plot_base$q62)
+head(plot_base)
+
+
+glimpse(plot_base)
+plot_base<- gather(plot_base, tbq4, mcdq4, kfcq4, key = "resto", value = "visit") 
+head(plot_base)
+plot_base
+plot_base <- filter(plot_base, !is.na(q62), !is.na(q64))
+plot_base
+plot_base<- filter(plot_base, visit==1)
+plot_base
+plot_base<-plot_base %>% group_by(resto) %>% 
+  mutate(score62= mean(q62)) %>% 
+  mutate(score64= mean(q64))
+
+##friendlystaff
+
+friendlystaff<-plot_base %>% group_by(resto, score62) %>% 
+  summarise(n=n())
+friendlystaff
+
+#From this graph below "Friendly Staff Score"
+#we will see that Tacobell has the most votes 
+#for employing staff that are friendly to give service for customers
+fs<- ggplot(friendlystaff, aes(x=resto, y=score62))+ 
+  geom_bar(stat="identity", fill="green4")+
+  coord_cartesian(ylim = c(0, 6))+
+  ggtitle("Friendly Staff Score")+
+  ylab("Friendly Staff Score")+
+  xlab("Restaurant Name")+
+  scale_x_discrete(labels=c("mcdq4"="McDonalds","kfcq4"="KFC", "tbq4"="Tacobell"))
+fs
+
+##speedofservice
+Speedofservice<-plot_base %>% group_by(resto, score64) %>% 
+  summarise(n=n())
+Speedofservice
+
+#from this graph below "Speed of Service SCore" 
+#we will see that KFC has the most votes for serving customer order
+#in the fastest speed compare to McDonalds and Tacobell
+ss<- ggplot(Speedofservice, aes(x=resto, y=score64))+ 
+  geom_bar(stat="identity", fill="green4")+
+  ggtitle("Speed of Service Score")+
+  coord_cartesian(ylim = c(0, 6))+
+  ylab("Speed of Service Score")+
+  xlab("Restaurant Name")+
+  scale_x_discrete(labels=c("mcdq4"="McDonalds","kfcq4"="KFC", "tbq4"="Tacobell"))
+ss
+
+#Conclusion 1 : Tacobell has the greatest vote regarding "Friendly Staff"
+#Conclusion 2 : KFC has the greatest vote regarding "Speed of Service"
+#Conclusion 3 : We reject H0, it is not true that Mc Donald as the restaurant that is the most visited by people
+#has better service quality regarding Friendly Staff and Speed of Service variables
+#People in fact has tendency to come to a fastfood restataurant that offer them other value
+#instead of "Quality of Service" and in this matter regarding our observation we are using
+# "Friendly Staff" and "Quality of Service"
+#In the next steps, we are going to investigate deeper and deeper..
+#What factor can bring people to visit  a fastfood restaurant.
+
+##3. factor analysis
+
+#Over all the steps in this investigation, this is the most essential and interesting part, 
+#that is going to answer questions such as:
+
+#1."What type of customers are actually visiting Mc Donald, KFC, and Tacobell "
+#2. "What type of people paying attention on "Speed of service" and "Friendly Staff" attiude"
+
+library(psych) # factor analysis procedures
+library(GPArotation) # rotation procedures for FA
+library(ggplot2)
+head(fastfood)
+
+
+obs4 <- fastfood %>% select(q91:q940)
+
+
+#function to change answer of q91:q940 from char level into numerical level
+levq91 <- as.character(unique(obs4$q91))
+levq91
+ordlvl91 <- levq91[c(2,6,4,1,3,5)]
+ordlvl91
+
+##function
+Q9OrdFunc <- function(x, ordlvl91){
+  factor(x, levels = ordlvl91, labels = ordlvl91, ordered = TRUE)
+}
+
+#iterate for all q9
+QQ9Ord <- map_df(obs4, Q9OrdFunc) %>% glimpse
+QQ9OrdNum <- map_df(QQ9Ord, as.numeric)%>% glimpse
+fastfood[70:109] <- QQ9OrdNum
+
+##Start FA with making a desired dataframe
+datafa <-  data.frame(tbq4=fastfood$tbq4, kfcq4=fastfood$kfcq4, mcdq4=fastfood$mcdq4,QQ9OrdNum) 
+
+str(datafa)
+head(datafa)
+glimpse(datafa)
+
+datafa<- gather(datafa, tbq4, mcdq4, kfcq4, key = "resto", value = "visit")
+datafa$visit <- recode(datafa$visit, "Visited in 2 Weeks"= 1, .default= 0 )
+datafa
+datafa<- filter(datafa,visit==1)
+datafa
+
+#factoranalysis iteration #1 model1
+
+model1<- select (datafa,q91:q940)
+
+model1NoName <- model1
+names(model1NoName) <- paste0("X", 1:40) # short variable names
+
+#outlier model1
+out_model1 <- outlier(model1)
+out_model1
+
+whichRemove1 <- which(out_model1 > sort(out_model1, decreasing = TRUE))
+whichRemove1
+
+cor.plot(cor(model1NoName), numbers = TRUE)
+model1OutNoName <- model1NoName[-whichRemove1, ]
+cor.plot(cor(model1OutNoName), numbers = TRUE)
+
+#this graph below shows difference of corelation before and after removing outlier
+diffcor1 <- round(cor(model1NoName) - cor(model1OutNoName), 2)
+kable(diffcor1) #kable prints the nice looking table
+cor.plot(cor(diffcor1), numbers = TRUE)
+
+summary(as.vector(diffcor1))
+
+#Cortes bartlet to see whether sufficient
+#correlations exist among the variables to proceed.
+cortest.bartlett(model1)
+#Result : R is not square, correlations are found and a warning is issued.
+
+library(tibble) # to use a function: rownames_to_column() 
+
+#KMO : overall measure for all of the variables combined
+kmo1 <- KMO(model1)
+
+kmo1
+#Result = overall MSA >0.55
+
+#MSA : measure for each of the variables individually.
+model1msa<-data.frame(MSA = round(kmo1$MSAi, 3)) %>% rownames_to_column(var = "Variable") %>% arrange(desc(MSA))
+model1msa
+
+#this is are the variable that is potentially going to be removed because of their MSA scores< 0.5
+model1vartoremove<- model1msa %>%  filter( MSA < 0.5)
+model1vartoremove 
+model1vartoremovename <- model1vartoremove$Variable
+model1vartoremovename
+#Pararell analysis 
+#scree test is derived by plotting the eigenvalues of each factor relative to the number of factors in order
+#Result =Parallel analysis suggests that the number of factors =  16  and the number of components =  NA
+fa.parallel(model1, fa = "fa")
+
+#Factor Analysis using method "minimum residual"
+#Based on the Common Factor Model - no distributional
+#assumptions; less prone to improper solutions than maximum
+#likelihood. Among the methods we have: minimum residuals factor
+#analysis, principal axis factor analysis, weighted least squares
+#factor analysis, generalized least squares factor analysis.
+#3. Based on the Principal Components - also is free of distribution
+
+#minimun residual, Varimax
+
+famod1 <- fa(model1, nfactors = 16, rotate = "varimax") # remember about default: fm = "minres"
+famod1
+#Only factors with an eigenvalues greater than 1 are significant and will be extracted.
+famod1$e.values # show eigenvalues
+fa.sort(famod1)
+fa.diagram(famod1, digits = 2)
+famod1goodvariable <- famod1$communalities[famod1$communalities>0.5]
+famod1goodvariable
+model1vartoremovename
+vss(cor(model1))
+#from 1st iteration 
+#Result = We remove several variables based on:
+# 1. Loading score
+# 2. MSS Score 
+#We are going to eliminate q910 for the next iteration as it has the most minimum communality score
+
+
+#Iteration#2 model2
+model2 <- select(model1, -q910)
+model2
+dim(model2)
+model2NoName <- model2
+names(model2NoName) <- paste0("X", 1:39) # short variable names
+
+#outlier model2
+out_model2 <- outlier(model2)
+out_model2
+
+whichRemove2 <- which(out_model2 > sort(out_model2, decreasing = TRUE))
+whichRemove2
+
+cor.plot(cor(model2NoName), numbers = TRUE)
+model2OutNoName <- model2NoName[-whichRemove2, ]
+cor.plot(cor(model2OutNoName), numbers = TRUE)
+
+#this graph below shows difference of corelation before and after removing outlier
+diffcor2 <- round(cor(model2NoName) - cor(model2OutNoName), 2)
+kable(diffcor2) #kable prints the nice looking table
+cor.plot(cor(diffcor2), numbers = TRUE)
+
+summary(as.vector(diffcor2))
+
+#Cortes bartlet to see whether sufficient
+#correlations exist among the variables to proceed.
+cortest.bartlett(model2)
+#Result : R is not square, correlations are found and a warning is issued.
+
+library(tibble) # to use a function: rownames_to_column() 
+
+#KMO : overall measure for all of the variables combined
+kmo2 <- KMO(model2)
+kmo2
+#Result = overall MSA >0.55
+
+#MSA : measure for each of the variables individually.
+model2msa<-data.frame(MSA = round(kmo2$MSAi, 3)) %>% rownames_to_column(var = "Variable") %>% arrange(desc(MSA))
+model2msa
+
+#this is are the variable that is potentially going to be removed because of their MSA scores< 0.5
+model2vartoremove<- model2msa %>%  filter( MSA < 0.5)
+model2vartoremove
+model2vartoremovename <- model2vartoremove$Variable
+model2vartoremovename
+#Pararell analysis 
+#scree test is derived by plotting the eigenvalues of each factor relative to the number of factors in order
+#Result =Parallel analysis suggests that the number of factors =  7  and the number of components =  NA
+fa.parallel(model2, fa = "fa")
+
+#Factor Analysis using method "minimum residual"
+#Based on the Common Factor Model - no distributional
+#assumptions; less prone to improper solutions than maximum
+#likelihood. Among the methods we have: minimum residuals factor
+#analysis, principal axis factor analysis, weighted least squares
+#factor analysis, generalized least squares factor analysis.
+#3. Based on the Principal Components - also is free of distribution
+
+#minimun residual, Varimax
+
+famod2 <- fa(model2, nfactors = 16, rotate = "varimax") # remember about default: fm = "minres"
+
+famod2
+#Only factors with an eigenvalues greater than 1 are significant and will be extracted.
+famod2$e.values # show eigenvalues
+fa.sort(famod2)
+fa.diagram(famod2, digits = 2)
+famod2goodvar<-famod2$communalities[famod2$communalities>0.5]
+famod2goodvar 
+model2vartoremovename
+vss(cor(model2))
+#from 2nd iteration we are going to eliminate 24 variables that have MSA Score <0.5 
+#and those which have communality score <0.5
+
+#Iteration#3 model3
+model3<- select (model2, q94,q95,q96,q98,q911,q912,q915,q917,q928,q930,q931,q932,q936,q939,q940)
+dim(model3)
+model3NoName <- model3
+names(model3NoName) <- paste0("X", 1:15) # short variable names
+
+#outlier model3
+out_model3 <- outlier(model3)
+out_model3
+
+whichRemove3 <- which(out_model3 > sort(out_model3, decreasing = TRUE))
+whichRemove3
+
+cor.plot(cor(model3NoName), numbers = TRUE)
+model3OutNoName <- model3NoName[-whichRemove3, ]
+cor.plot(cor(model3OutNoName), numbers = TRUE)
+
+#this graph below shows difference of corelation before and after removing outlier
+diffcor3 <- round(cor(model3NoName) - cor(model3OutNoName), 2)
+kable(diffcor3) #kable prints the nice looking table
+cor.plot(cor(diffcor3), numbers = TRUE)
+
+summary(as.vector(diffcor3))
+
+#Cortes bartlet to see whether sufficient
+#correlations exist among the variables to proceed.
+cortest.bartlett(model3)
+#Result : R is not square, correlations are found and a warning is issued.
+
+library(tibble) # to use a function: rownames_to_column() 
+
+#KMO : overall measure for all of the variables combined
+kmo3 <- KMO(model3)
+kmo3
+#Result = overall MSA >0.55
+
+#MSA : measure for each of the variables individually.
+model3msa<-data.frame(MSA = round(kmo3$MSAi, 3)) %>% rownames_to_column(var = "Variable") %>% arrange(desc(MSA))
+model3msa
+
+#this is are the variable that is potentially going to be removed because of their MSA scores< 0.5
+model3vartoremove<- model3msa %>%  filter( MSA < 0.5)
+model3vartoremove
+
+#Pararell analysis 
+#scree test is derived by plotting the eigenvalues of each factor relative to the number of factors in order
+#Result =Parallel analysis suggests that the number of factors =  7  and the number of components =  NA
+fa.parallel(model3, fa = "fa")
+
+#Factor Analysis using method "minimum residual"
+#Based on the Common Factor Model - no distributional
+#assumptions; less prone to improper solutions than maximum
+#likelihood. Among the methods we have: minimum residuals factor
+#analysis, principal axis factor analysis, weighted least squares
+#factor analysis, generalized least squares factor analysis.
+#3. Based on the Principal Components - also is free of distribution
+
+#minimun residual, Varimax
+
+famod3 <- fa(model3, nfactors = 7, rotate = "varimax") # remember about default: fm = "minres"
+famod3
+#Only factors with an eigenvalues greater than 1 are significant and will be extracted.
+famod3$e.values # show eigenvalues
+fa.sort(famod3)
+fa.diagram(famod3, digits = 2)
+famod3goodvar<- famod3$communalities[famod3$communalities>0.5]
+famod3goodvar
+vss(cor(model3))
+
+#final model, communality scores sufficient for each variables, 
+#but we ignore those factor that has strong correlation and good 
+#communality score and loading score towards only one variable
+#in this case we are going to ignore MR6, and MR5
+# we will use only 3 factors MR1 , MR2, MR3
+#where for MR1 we are going to ignore q911, since it has loading score <0.5
+
+faNames3 <- c("Care about Nutrition","Care about Brand Advertisement","Care about People Testimony","specific","Foodquality")
+sumscal_1 <- apply(model3 %>% select(q98,q940,q931), 1, mean)
+sumscal_2 <- apply(model3 %>% select(q917,q930), 1, mean)
+sumscal_3 <- apply(model3 %>% select(q912,q94,q928), 1, mean)
+
+sumscal1 <- data.frame(factor_1 = sumscal_1, factor_2 = sumscal_2,factor_3 = sumscal_3)
+kable(head(sumscal1))
+names(famod3)
+fascores3 <- data.frame(famod3$scores)
+kable(head(fascores3))
+kable(cor(fascores3))
+
+famod_AR3 <- fa(model3, nfactors = 3, scores = "Anderson", rotate = "varimax")
+fa.sort(famod_AR3)
+fascores_AR3 <- data.frame(famod_AR3$scores)
+kable(head(fascores_AR3))
+kable(cor(fascores_AR3))
+
+names(fascores_AR3) <- c("f1", "f2", "f3")
+mapVar <- c("resto")
+mapVarNames <- c("Restaurant Visitor")
+glimpse(datafa)
+
+model3Map <- data.frame(X=datafa$resto, fascores_AR3) %>% group_by(X) %>%
+  summarise_each(list(mean))
+kable(model3Map, digits = 3)
+restoname <- c("Mcdonald Visitor", "KFC Visitor","Tacobell Visitor" )
+model3Map$X <- factor(model3Map$X, levels = model3Map$X[c(2,1,3)], labels = model3Map$X[c(2,1,3)], ordered = TRUE)
+
+#Graph "Characteristic of Consumer 1" shows that MCDonalds Visitor are maily people who are concern about the nutrion of food that they are eating"
+#while on the other hand, KFC visitor are maily people who notice about brand marketing
+#Tacobell's visitors do not show any tendency of specific characteristic
+ggplot(model3Map, aes(x=f1, y=f2, color=X)) + theme_bw() + geom_point(size=4) + 
+  xlab(faNames3[1]) + ylab(faNames3[2]) + labs(color=mapVarNames[1]) +
+  ggtitle("Characteristic of Consumer 1") +
+  geom_hline(yintercept = 0, color="orange") + geom_vline(xintercept = 0, color="orange")+
+  scale_color_discrete("Visitor of Restaurant",labels = c("McDonald Visitor", "KFC Visitor", "Tacobell Visitor")) 
+
+#Graph "Characteristic of Consumer 2" shows that Tacobell Visitors are mainly people who are concerning baout
+#other people testimony about a product to choose certain produnt in the future
+ggplot(model3Map, aes(x=f3, y=f2 ,color=X)) + theme_bw() + geom_point(size=4) + 
+  xlab(faNames3[3]) + ylab(faNames3[2]) + labs(color=mapVarNames[1]) +
+  ggtitle("Characteristic of Consumer 2") +
+  geom_hline(yintercept = 0, color="orange") + geom_vline(xintercept = 0, color="orange")+
+  scale_color_discrete("Visitor of Restaurant",labels = c("McDonald Visitor", "KFC Visitor", "Tacobell Visitor")) 
+
+#Conclusion of Factor Analysis :
+#1. McDonald as the most visited restaurant is choosen by visitors that care about nutrion of the food, 
+#so it shows that McDonalds serve better quality of food
+#aVery important fact derived from the result of ths analysis is that 
+#people have tendency to choose restaurant that serve more nutritious and healthy food 
+#rather than to go to restaurant that has fast service speed and friendly staff
+
+
+#4. Regression Logistic
+
+#in this part we are gong to see regression model
+#where
+#Y = number of visior
+#X1= Speed of Service
+#X2= Friendly Staff
+# we are going to calculat statistical significance for every variable
+#so we can predict the probability of visiting a restaurant within 2 months 
+#for someone that give certain vote to a restaurant due to its service quality
+#each level of  vote can give different coeff and it will affect the probablity
+#of a person visiting a specific restaurant
+#In this case service quality is  
+#measured through variable q62(Speed of service) and q64(friendly staff)
+library(rms)
+visitors<- select(fastfood, tbq1, kfcq1)
+visitors$tbq1 = ifelse(visitors$tbq1 == 'Visited in 2 months', 'Visited', 'Not visited')
+visitors$kfcq1 = ifelse(visitors$kfcq1 == 'Visited in 2 months', 'Visited', 'Not visited')
+
+data_lrm = cbind(select(fastfood, q62, q64), visitors)
+
+model_tb = lrm(tbq1 ~ q62 + q64, data_lrm)
+model_kfc = lrm(kfcq1 ~ q62 + q64, data_lrm)
+#Here is the Statistic  Value of Tacobell regarding SPeed of service and Friendly Staff
+#Using regression logistic
+model_tb
+#Here is the Statistic  Value of KFC regarding SPeed of service and Friendly Staff
+#Using regression logistic
+model_kfc
+#since the highter satisfactional level shows bigger positive coeff value, 
+#We can make summary that :
+#The highest satifactional level of a customer regarding Service quality of a restaurant
+#the more probability that the person will visit the restaurant within 2 months
+#In this case service quality is  
+#measured through variable q62(Speed of service) and q64(friendly staff)
+# X1, X2 is significantly affecting Y 
+#which means atisfaction level of a customer regarding x1 and x2
+#will increase the probability that they are going to visit the restaurant within 2 months
+
+
+

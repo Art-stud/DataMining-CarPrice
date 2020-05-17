@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1588545498658.000,
+    "dirty" : false,
+    "encoding" : "ISO8859-1",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "35C426D",
+    "lastKnownWriteTime" : 1589716598,
+    "last_content_update" : 1589716598020,
+    "path" : "~/Business Statistic/Document/Car Price/CarPrice.R",
+    "project_path" : "CarPrice.R",
+    "properties" : {
+        "cursorPosition" : "113,6",
+        "scrollLine" : "105",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
