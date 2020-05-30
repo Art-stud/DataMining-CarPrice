@@ -6,17 +6,23 @@ library(markdown)
 library(dplyr)
 library (ggplot2)
 library(tidyverse)
-library(psych)
 library(GPArotation)
-library(knitr)
-install.packages("Metrics")
+#install.packages("Metrics")
 library(caret)
-install.packages("rpart")
-install.packages("rpart.plot")
+#install.packages("rpart")
+#install.packages("rpart.plot")
 library(rpart)
 library(rpart.plot)
+#install.packages("randomForest")
+library(randomForest)
 #data Preparation
 library(readxl)
+install.packages("CRAN")
+install.packages("reldist")
+library(ineq)
+
+reldist??
+  ??reldist
 carPrice <- read_excel("C:\\Users\\khalida\\Documents\\Business Statistic\\Document\\Car Price\\Data\\carPrice.xlsx", 
                        n_max = 111)
 ##View(carPrice)
@@ -62,7 +68,7 @@ carPriceWithSignificantVar<- carPriceClean[c(1,2,3,5)]
 
 
 ##########################################################
-#VAlidation set approach
+#Validation set approach
 set.seed(123)
 training.samples <- carPriceWithSignificantVar$Price %>%
   createDataPartition(p = 0.8, list = FALSE)
@@ -86,7 +92,7 @@ print(test.data$Price)
 RMSE(predictions, test.data$Price)/mean(test.data$Price)
 MAE(predictions, test.data$Price)
 #sum
-summary(model)
+summary(model1)
 model1
 
 #######################################################################
@@ -112,7 +118,7 @@ train.control <- trainControl(method = "cv", number = 3)
 model3 <- train(Price ~., data = carPriceWithSignificantVar, method = "lm",
                trControl = train.control)
 # Summarize the results
-print(model)
+print(model3)
 
 #######################################################################
 # Define training control
@@ -123,7 +129,7 @@ train.control <- trainControl(method = "repeatedcv",
 model4 <- train(Price ~., data = carPriceWithSignificantVar, method = "lm",
                trControl = train.control)
 # Summarize the results
-print(model)
+print(model4)
 
 ######################################################################
 ##Multiple Regression PREDICTION 
@@ -140,8 +146,28 @@ predict(model3, data.frame("EngineCapacity"=1984, "Speed"=230, "FuelType"=1, "Fu
 predict(model4, data.frame("EngineCapacity"=1984, "Speed"=230, "FuelType"=1, "FuelScore"=509), interval= "prediction")
 
 ##########################################################################
-##Regresion Tree
+##---->>>>Regresion Tree- RANDOM FOREST<<<<<<----------###################
 
 model1 <- rpart(Price ~ .,data= carPriceWithSignificantVar, method= "anova")
+
 model1
-rpart.plot(model1, type= 2, digits= 5, fallen.leaves=TRUE)
+triel<-rpart.plot(model1, type= 2, digits= 5, fallen.leaves=TRUE)
+
+summary(triel)
+
+#gini(model1)
+#ineq(carPrice$Price, type= "Gini")
+#fullTree <- rpart(Price~.,method='class',control= rpart.control(cp=0,minsplit=9),data=carPriceClean)
+
+#plot(triel)
+
+text(model1,use.n=TRUE)
+rf<- randomForest(Price ~ .,importance= TRUE, data=carPriceClean)
+rf
+varImpPlot(rf)
+y<- data.frame(matrix(c(1984,230,1,509),nrow=1))
+y
+colnames(y)<-c('EngineCapacity', 'Speed', 'FuelType', 'FuelScore')
+y
+predict(rf,y)
+
