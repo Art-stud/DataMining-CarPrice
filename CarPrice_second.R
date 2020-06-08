@@ -1,7 +1,10 @@
-#Data Source :https://www.wyborkierowcow.pl/moc-w-przeliczeniu-na-zlotowki-zestawienie/
+#Data Source : https://www.kaggle.com/orgesleka/used-cars-database file: autos.csv
+
 #MED Project
 # dependent var(Y)= price
-# independent Var(X)= speed, fueltype, fuelscore, enginecapacity
+# independent Var(X)= price, vehicleType, yearOfRegistration, 
+                    # gearbox, powerPS, model, kilometer, fuelType, 
+                    # brand, notRepairedDamage
 library(markdown)
 library(dplyr)
 library (ggplot2)
@@ -12,41 +15,73 @@ library(knitr)
 #install.packages("Metrics")
 library(caret)
 library(readxl)
+#install.packages("rio")
+library(rio)
+#install.packages("visualize")
+library(visualize)
+#install.packages("writexl")
+library(writexl)
+#install.packages("xlsReadWrite")
+install.packages("xlsx")
+library("xlsx") 
 
-#data Preparation
 
-# add code to read csv and code to change the csv to exel
-# then combine two datebase and then read like exel file 
+
 #Choose Read data
-fileCsv <- read.csv(file.choose())
-fileCsv
-#If user choose different file then csv the thje window with choice will open again
-x <- 1*nrow(fileCsv)
-if(x > 0) {   
-  carPriceCsv <-print.data.frame(fileCsv)
+
+file_csv <- read.csv(file.choose())
+file_csv
+
+
+
+x <- 1*nrow(file_csv)
+if(x > 0) { 
+     carPrice<-print.data.frame(file_csv)
+  
 } else { 
-      carPrice <-read_xlsx(file.choose())   #open again window with choice
-      }
-#if user choose csv the code convert csv to exel 
-#it's two good idea, first teh user can convert every file from csv to exel
-# and second: the code can calculate the data
-x1<-1*nrow(carPriceCsv)
-if(x1>0) {
-  #write.xlsx(carPriceCsv, carPrice1.xlsx)  ##think
-} else {
-  print.data.frame(carPrice)   
+       print(paste("Choose the file with pattern .csv")) 
+       carPrice <- read.csv(file.choose())
 }
 
-head(carPrice)
-head(carPrice1)
-
-
+#show data
 View(carPrice)
-##carPrice
 str(carPrice)
 head(carPrice)
 glimpse(carPrice)
 nrow(carPrice)
+
+## Choose only atribiutes for analyze from data
+carPrice_selected <- select(carPrice, price, vehicleType, yearOfRegistration, gearbox, powerPS, model, kilometer, fuelType, brand, notRepairedDamage)
+View(carPrice_selected)
+str(carPrice_selected)
+head(carPrice_selected)
+glimpse(carPrice_selected)
+nrow(carPrice_selected)
+min(carPrice_selected$price)
+
+## Clean the data
+
+## Change 0 to NA in all data
+carPrice_selected[carPrice_selected == 0] <- NA
+carPrice_selected
+
+## Change empty cell to NA in all data
+carPrice_selected[carPrice_selected == ""] <- NA
+carPrice_selected
+
+## Delete rows and column with NA cell
+carPrice_clean_NA <-carPrice_selected[complete.cases(carPrice_selected),]
+carPrice_clean_NA
+view(carPrice_clean_NA)
+glimpse(carPrice_clean_NA)
+
+## Filter data 
+carPrice_clean_0 <- filter(carPrice_clean_NA, price > 499,  powerPS > 5 , yearOfRegistration > 0, kilometer > 0 )
+carPrice_clean_0
+nrow(carPrice_clean_0)
+min(carPrice_clean_0$price)
+min(carPrice_clean_0$powerPS)
+glimpse(carPrice_clean_0)
 
 ##Checking categorical values
 fuelTypeOnly <- carPrice %>% select(FuelType)
