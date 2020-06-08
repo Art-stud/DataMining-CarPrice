@@ -226,17 +226,7 @@ linmodel
 plot(linmodel)
 abline(linmodel)
 
-##removing column FuelType
-#carPriceClean2 <-carPrice[c(1,2,3,5)]
-#carPriceClean2
-#glimpse(carPriceClean2)
 
-##Linear Model 2
-#linmodel2 <- lm(carPriceClean2$Price~carPriceClean2$EngineCapacity+carPriceClean2$Speed+carPriceClean2$FuelScore,data = carPriceClean2)
-#summary(linmodel2)                  
-#linmodel2
-#plot(linmodel2)
-#abline(linmodel2)
 
 mean<-mean(carPriceClean$Price)
 mean
