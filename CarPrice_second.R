@@ -93,61 +93,62 @@ library(rio)
 export(list(carPrice_clean_0 = carPrice_clean_0, iris=iris), "carPrice_clean_0.xlsx")
  
 carPrice_Clean_xlsx <- read_xlsx("carPrice_clean_0.xlsx")
-carPrice <- carPrice_Clean_xlsx
-glimpse(carPrice)
-head(carPrice)
+carPrice_1 <- carPrice_Clean_xlsx
+glimpse(carPrice_1)
+head(carPrice_1)
 
 
 ##Checking categorical values
 #fuelType
-fuelTypeOnly <- carPrice %>% select(fuelType)
-fueltypetrial <- as.character(unique(fuelTypeOnly))
-fueltypetrial
+fuelTypeOnly_1 <- carPrice_1 %>% select(fuelType)
+fueltypetrial_1 <- as.character(unique(fuelTypeOnly_1))
+fueltypetrial_1
 
 #model
-modelOnly <- carPrice %>% select(model)
+modelOnly <- carPrice_1 %>% select(model)
 modeltrial <- as.character(unique(modelOnly))
 modeltrial
 
 #vehicleType
-vehicleTypeOnly <- carPrice %>% select(vehicleType)
+vehicleTypeOnly <- carPrice_1 %>% select(vehicleType)
 vehicleTypetrial <- as.character(unique(vehicleTypeOnly))
 vehicleTypetrial
 
 #gearbox
-gearboxOnly <- carPrice %>% select(gearbox)
+gearboxOnly <- carPrice_1 %>% select(gearbox)
 gearboxtrial <- as.character(unique(gearboxOnly))
 gearboxtrial
 
 #brand
-brandOnly <- carPrice %>% select(brand)
+brandOnly <- carPrice_1 %>% select(brand)
 brandtrial <- as.character(unique(brandOnly))
 brandtrial
 
 #notRepairedDamage
-notRepairedDamageOnly <- carPrice %>% select(notRepairedDamage)
+notRepairedDamageOnly <- carPrice_1 %>% select(notRepairedDamage)
 notRepairedDamagetrial <- as.character(unique(notRepairedDamageOnly))
 notRepairedDamagetrial
 
 print('Checking categorical values:')
-fueltypetrial
+fueltypetrial_1
 modeltrial
 vehicleTypetrial
 gearboxtrial
 brandtrial
 notRepairedDamagetrial
 
-
-
 ##function changing fueltype from categorical into numerical
-fueltypeFunc <- function(x, fueltypetrial){
-  factor(x, levels = fueltypetrial, labels = fueltypetrial, ordered = TRUE)
+fueltypeFunc_1 <- function(carPrice_1, fueltypetrial_1){
+  factor(carPrice_1, levels = fueltypetrial_1, labels = fueltypetrial_1, ordered = TRUE)
 }
+
+glimpse(carPrice_1)
 #converting fueltype into numerical var
-trial <- map_df(fuelTypeOnly, fueltypeFunc) %>% glimpse
+trial <- map_df(fuelTypeOnly_1, fueltypeFunc_1) %>% glimpse
 trial <- map_df(trial, as.numeric)%>% glimpse
-carPrice[6]<- trial
-glimpse(carPrice)
+carPrice_1[8]<- trial
+glimpse(carPrice_1)
+
 
 ##removing column
 carPriceClean <-carPrice[c(2,4,5,6,7)]
