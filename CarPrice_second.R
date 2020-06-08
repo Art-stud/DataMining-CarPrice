@@ -137,6 +137,7 @@ gearboxtrial
 brandtrial
 notRepairedDamagetrial
 
+glimpse(carPrice_1)
 ##function changing fueltype from categorical into numerical
 fueltypeFunc_1 <- function(carPrice_1, fueltypetrial_1){
   factor(carPrice_1, levels = fueltypetrial_1, labels = fueltypetrial_1, ordered = TRUE)
@@ -150,14 +151,76 @@ carPrice_1[8]<- trial
 glimpse(carPrice_1)
 
 
+##function changing model from categorical into numerical
+modelFunc <- function(carPrice_1, modeltrial){
+  factor(carPrice_1, levels = modeltrial, labels = modeltrial, ordered = TRUE)
+}
+
+glimpse(carPrice_1)
+#converting model into numerical var
+trial_2 <- map_df(modelOnly, modelFunc) %>% glimpse
+trial_2 <- map_df(trial_2, as.numeric)%>% glimpse
+carPrice_1[6]<- trial_2
+glimpse(carPrice_1)
+
+##function changing vehicleType from categorical into numerical
+vehicleTypetrialFunc <- function(carPrice_1, vehicleTypetrial){
+  factor(carPrice_1, levels = vehicleTypetrial, labels = vehicleTypetrial, ordered = TRUE)
+}
+
+glimpse(carPrice_1)
+#converting vehicleType into numerical var
+trial_3 <- map_df(vehicleTypeOnly, vehicleTypetrialFunc) %>% glimpse
+trial_3 <- map_df(trial_3, as.numeric)%>% glimpse
+carPrice_1[2]<- trial_3
+glimpse(carPrice_1)
+
+
+##function changing gearbox from categorical into numerical
+gearboxtrialFunc <- function(carPrice_1, gearboxtrial){
+  factor(carPrice_1, levels = gearboxtrial, labels = gearboxtrial, ordered = TRUE)
+}
+
+glimpse(carPrice_1)
+#converting gearbox into numerical var
+trial_4 <- map_df(gearboxOnly, gearboxtrialFunc) %>% glimpse
+trial_4 <- map_df(trial_4, as.numeric)%>% glimpse
+carPrice_1[4]<- trial_4
+glimpse(carPrice_1)
+
+##function changing brand from categorical into numerical
+brandtrialFunc <- function(carPrice_1, brandtrial){
+  factor(carPrice_1, levels = brandtrial, labels = brandtrial, ordered = TRUE)
+}
+
+glimpse(carPrice_1)
+#converting brand into numerical var
+trial_5 <- map_df(brandOnly, brandtrialFunc) %>% glimpse
+trial_5 <- map_df(trial_5, as.numeric)%>% glimpse
+carPrice_1[9]<- trial_5
+glimpse(carPrice_1)
+
+##function changing notRepairedDamage from categorical into numerical
+notRepairedDamagetrialFunc <- function(carPrice_1, notRepairedDamagetrial){
+  factor(carPrice_1, levels = notRepairedDamagetrial, labels = notRepairedDamagetrial, ordered = TRUE)
+}
+
+glimpse(carPrice_1)
+#converting notRepairedDamage into numerical var
+trial_6 <- map_df(notRepairedDamagetrialOnly, notRepairedDamagetrialFunc) %>% glimpse
+trial_6 <- map_df(trial_6, as.numeric)%>% glimpse
+carPrice_1[10]<- trial_6
+glimpse(carPrice_1)
+
+
 ##removing column
-carPriceClean <-carPrice[c(2,4,5,6,7)]
-carPriceClean
-glimpse(carPriceClean)
+carPriceClean_column <-carPrice_1[c(1,2,3,4,5,6,7,8)]
+carPriceClean_column
+glimpse(carPriceClean_column)
 
 
 ##Linear Model
-linmodel <- lm(carPriceClean$Price~carPriceClean$EngineCapacity+carPriceClean$Speed+carPriceClean$FuelType+carPriceClean$FuelScore,data = carPriceClean)
+linmodel <- lm(carPriceClean_rest$price~carPriceClean_rest$vehicleType+carPriceClean_rest$yearOfRegistration+carPriceClean_rest$gearbox+carPriceClean_rest$powerPS+carPriceClean_rest$model+carPriceClean_rest$kilometer+carPriceClean_rest$fuelType,data = carPriceClean_rest)
 summary(linmodel)                  
 linmodel
 plot(linmodel)
