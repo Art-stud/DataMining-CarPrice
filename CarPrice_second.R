@@ -69,6 +69,10 @@ carPrice_selected
 carPrice_selected[carPrice_selected == ""] <- NA
 carPrice_selected
 
+## Change "," to NA in all data
+carPrice_selected[carPrice_selected == ","] <- NA
+carPrice_selected
+
 ## Delete rows and column with NA cell
 carPrice_clean_NA <-carPrice_selected[complete.cases(carPrice_selected),]
 carPrice_clean_NA
@@ -83,10 +87,57 @@ min(carPrice_clean_0$price)
 min(carPrice_clean_0$powerPS)
 glimpse(carPrice_clean_0)
 
+#export clean file from csv to xlsx
+
+library(rio)
+export(list(carPrice_clean_0 = carPrice_clean_0, iris=iris), "carPrice_clean_0.xlsx")
+ 
+carPrice_Clean_xlsx <- read_xlsx("carPrice_clean_0.xlsx")
+carPrice <- carPrice_Clean_xlsx
+glimpse(carPrice)
+head(carPrice)
+
+
 ##Checking categorical values
-fuelTypeOnly <- carPrice %>% select(FuelType)
+#fuelType
+fuelTypeOnly <- carPrice %>% select(fuelType)
 fueltypetrial <- as.character(unique(fuelTypeOnly))
 fueltypetrial
+
+#model
+modelOnly <- carPrice %>% select(model)
+modeltrial <- as.character(unique(modelOnly))
+modeltrial
+
+#vehicleType
+vehicleTypeOnly <- carPrice %>% select(vehicleType)
+vehicleTypetrial <- as.character(unique(vehicleTypeOnly))
+vehicleTypetrial
+
+#gearbox
+gearboxOnly <- carPrice %>% select(gearbox)
+gearboxtrial <- as.character(unique(gearboxOnly))
+gearboxtrial
+
+#brand
+brandOnly <- carPrice %>% select(brand)
+brandtrial <- as.character(unique(brandOnly))
+brandtrial
+
+#notRepairedDamage
+notRepairedDamageOnly <- carPrice %>% select(notRepairedDamage)
+notRepairedDamagetrial <- as.character(unique(notRepairedDamageOnly))
+notRepairedDamagetrial
+
+print('Checking categorical values:')
+fueltypetrial
+modeltrial
+vehicleTypetrial
+gearboxtrial
+brandtrial
+notRepairedDamagetrial
+
+
 
 ##function changing fueltype from categorical into numerical
 fueltypeFunc <- function(x, fueltypetrial){
