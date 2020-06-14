@@ -142,14 +142,12 @@ glimpse(carPrice_1)
 fueltypeFunc_1 <- function(carPrice_1, fueltypetrial_1){
   factor(carPrice_1, levels = fueltypetrial_1, labels = fueltypetrial_1, ordered = TRUE)
 }
-
 glimpse(carPrice_1)
 #converting fueltype into numerical var
 trial <- map_df(fuelTypeOnly_1, fueltypeFunc_1) %>% glimpse
 trial <- map_df(trial, as.numeric)%>% glimpse
 carPrice_1[8]<- trial
 glimpse(carPrice_1)
-
 
 ##function changing model from categorical into numerical
 modelFunc <- function(carPrice_1, modeltrial){
@@ -167,7 +165,6 @@ glimpse(carPrice_1)
 vehicleTypetrialFunc <- function(carPrice_1, vehicleTypetrial){
   factor(carPrice_1, levels = vehicleTypetrial, labels = vehicleTypetrial, ordered = TRUE)
 }
-
 glimpse(carPrice_1)
 #converting vehicleType into numerical var
 trial_3 <- map_df(vehicleTypeOnly, vehicleTypetrialFunc) %>% glimpse
@@ -175,12 +172,10 @@ trial_3 <- map_df(trial_3, as.numeric)%>% glimpse
 carPrice_1[2]<- trial_3
 glimpse(carPrice_1)
 
-
 ##function changing gearbox from categorical into numerical
 gearboxtrialFunc <- function(carPrice_1, gearboxtrial){
   factor(carPrice_1, levels = gearboxtrial, labels = gearboxtrial, ordered = TRUE)
 }
-
 glimpse(carPrice_1)
 #converting gearbox into numerical var
 trial_4 <- map_df(gearboxOnly, gearboxtrialFunc) %>% glimpse
@@ -192,7 +187,6 @@ glimpse(carPrice_1)
 brandtrialFunc <- function(carPrice_1, brandtrial){
   factor(carPrice_1, levels = brandtrial, labels = brandtrial, ordered = TRUE)
 }
-
 glimpse(carPrice_1)
 #converting brand into numerical var
 trial_5 <- map_df(brandOnly, brandtrialFunc) %>% glimpse
